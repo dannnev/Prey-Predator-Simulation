@@ -1,12 +1,15 @@
-const int mapsize = 100;
-const int seeds = 5; // amount of seeds
-const int chance = 50; // chance of spawning a child seed
-const int maxshine = 5; // maximum possible amount of sun units added to the field of sun
+const int mapsize = 150;
+const int seeds = 20; // amount of seeds
+const int chance = 99; // chance of spawning a child seed
+const int maxshine = 8; // maximum possible amount of sun units added to the field of sun
 
 unsigned int field_of_sun[mapsize][mapsize]={0};
 unsigned int shine;
 
 int enhancer = 0; // extends the suna and sunb vectors
+int expected = round(450*(maxshine+1)*seeds/(100-chance)); // expected value of total sun units on the field of sun
+float grad = round(100*expected/pow(mapsize,2))/100; // expected value per cell
+int regime = 5000;
 
 std::vector<int> suna (seeds); // x-coordinate of the sun seeds
 std::vector<int> sunb (seeds); // y-coordinate of the sun seeds
