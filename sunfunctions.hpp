@@ -1,6 +1,7 @@
-const int mapsize = 150;
-const int seeds = 20; // amount of seeds
-const int chance = 99; // chance of spawning a child seed
+// Root header file for the sun.hpp
+
+const int seeds = 60; // amount of seeds
+const int chance = 97; // chance of spawning a child seed
 const int maxshine = 8; // maximum possible amount of sun units added to the field of sun
 
 unsigned int field_of_sun[mapsize][mapsize]={0};
@@ -9,7 +10,7 @@ unsigned int shine;
 int enhancer = 0; // extends the suna and sunb vectors
 int expected = round(450*(maxshine+1)*seeds/(100-chance)); // expected value of total sun units on the field of sun
 float grad = round(100*expected/pow(mapsize,2))/100; // expected value per cell
-int regime = 5000;
+int regime = 5000; // time (ms) to wait before automatic sunrise & sunset
 
 std::vector<int> suna (seeds); // x-coordinate of the sun seeds
 std::vector<int> sunb (seeds); // y-coordinate of the sun seeds
@@ -20,7 +21,7 @@ void getlight(int x, int y)
     shine = rand() % maxshine +1;
     for (int j=0; j<3;j++)
         for (int k=0; k<3; k++)
-            field_of_sun[(y+j+mapsize-1) % mapsize][(x+k+mapsize-1) % mapsize]+= shine;
+            field_of_sun[(x+j+mapsize-1) % mapsize][(y+k+mapsize-1) % mapsize]+= shine;
 }
 
 // Enriches the field of sun

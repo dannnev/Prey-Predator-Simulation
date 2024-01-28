@@ -9,35 +9,31 @@
 #include <algorithm>
 
 #include "customSFML.hpp"
-#include "sunfunctions.hpp"
+#include "sun.hpp"
+#include "rabbits.hpp"
 
 using namespace sf;
 using namespace std;
 
 int main()
 {
-    RenderWindow window(VideoMode(1600,900), "Cells evolution");
+    RenderWindow window(VideoMode(width,heigth), "Cells evolution");
     window.setFramerateLimit(60);
 
-    RectangleShape suncover[mapsize][mapsize];
-
-    Text elapsed("",arcade,50);
-    elapsed.setPosition(Vector2f(900,100));
-
+    Font arcade;
     arcade.loadFromFile("arcade.ttf");
 
-    tablo_back.loadFromFile("tablo.png");
-    tablo.setTexture(tablo_back);
-    tablo.setPosition(900,0);
+    Text elapsed("",arcade,50);
+    elapsed.setPosition(Vector2f(heigth+100,100));
 
-    for (int i=0; i<mapsize; i++)
-        for (int j=0; j<mapsize; j++)
-            {
-                suncover[i][j].setSize(Vector2f(900/mapsize,900/mapsize));
-                suncover[i][j].setPosition(Vector2f(900*j/mapsize,900*i/mapsize));
-            }
+    Text map("",arcade,30);
+    map.setPosition(Vector2f(heigth+100,200));
 
-    Clock clock; 
+    Time timeelapsed;
+
+    Clock clock;
+
+    Rabbits zhoverch(100);
 
     while (window.isOpen())
     {
@@ -52,19 +48,17 @@ int main()
                 if (e.key.code == Keyboard::Escape)
                     window.close();
 
-            // Sunrise & sunset
             if (e.type == Event::KeyPressed)
-                if (e.key.code == Keyboard::Space)
-                    {
-                        sunset();
-                        sunrise();
-                        for (int i=0; i<mapsize; i++)
-                            for (int j=0; j<mapsize; j++)
-                                {
-                                    if (field_of_sun[i][j] > 0)
-                                    {suncover[i][j].setFillColor(sungradient[min(15,div(field_of_sun[i][j],15).quot)]);}
-                                }
-                    }
+                if (e.key.code == Keyboard::K)
+                    zhoverch.kill(rand()% zhoverch.fluffle);
+
+            if (e.type == Event::KeyPressed)
+                if (e.key.code == Keyboard::R)
+                    show_rabbits = !show_rabbits;
+
+            if (e.type == Event::KeyPressed)
+                if (e.key.code == Keyboard::S)
+                    show_sun = !show_sun;
         }
 
         // Update time
@@ -74,23 +68,28 @@ int main()
         // Automatic sunrise & sunset
         if (timeelapsed.asMilliseconds() > regime)
             {
-                sunset();
-                sunrise();
-                for (int i=0; i<mapsize; i++)
-                    for (int j=0; j<mapsize; j++)
-                        {
-                            if (field_of_sun[i][j] > 0)
-                            {suncover[i][j].setFillColor(sungradient[min(15,div(field_of_sun[i][j],15).quot)]);}
-                        }
-                regime+=5000;
+                renewsun();
+                regime+=45000;
+                string lol = "";
+                for (int i=0;i<mapsize;i++)
+                    {for (int j=0;j<mapsize;j++)
+                        {lol+=to_string(field_of_sun[j][i]); lol+="    ";}
+                    lol+="\n";}
+                map.setString(lol);
+                       
+            }
+
+        if (timeelapsed.asMilliseconds() > rabbit_regime)
+            {
+                zhoverch.move(field_of_sun);
+                rabbit_regime+=rabbit_speed;
             }
 
         window.clear(grey);
-        window.draw(tablo);
         window.draw(elapsed);
-        for (int i=0; i<mapsize; i++)
-            for (int j=0; j<mapsize; j++)
-                if (field_of_sun[i][j] > 0) window.draw(suncover[i][j]);
+        // window.draw(map);
+        if(show_sun) window.draw(sun);
+        if(show_rabbits) window.draw(zhoverch);
         window.display();
     }
    
