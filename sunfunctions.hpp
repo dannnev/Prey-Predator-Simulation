@@ -1,16 +1,18 @@
-// Root header file for the sun.hpp
+// Header file for the sun.hpp
 
-const int seeds = 60; // amount of seeds
-const int chance = 97; // chance of spawning a child seed
-const int maxshine = 8; // maximum possible amount of sun units added to the field of sun
+const int seeds = 100; // amount of seeds
+const int chance = 98; // chance of spawning a child seed
+const int maxshine = 1000; // maximum possible amount of sun units added to the field of sun
 
 unsigned int field_of_sun[mapsize][mapsize]={0};
 unsigned int shine;
 
 int enhancer = 0; // extends the suna and sunb vectors
 int expected = round(450*(maxshine+1)*seeds/(100-chance)); // expected value of total sun units on the field of sun
-float grad = round(100*expected/pow(mapsize,2))/100; // expected value per cell
-int regime = 5000; // time (ms) to wait before automatic sunrise & sunset
+int actual; // actual value of total sun units on the field of sun
+int gradus; // bar of the sungradient
+int sunset_regime = 30000; // time between sunrises
+int sunrise_regime = 0; // time between sunrises
 
 std::vector<int> suna (seeds); // x-coordinate of the sun seeds
 std::vector<int> sunb (seeds); // y-coordinate of the sun seeds
@@ -19,9 +21,9 @@ std::vector<int> sunb (seeds); // y-coordinate of the sun seeds
 void getlight(int x, int y)
 {
     shine = rand() % maxshine +1;
-    for (int j=0; j<3;j++)
-        for (int k=0; k<3; k++)
-            field_of_sun[(x+j+mapsize-1) % mapsize][(y+k+mapsize-1) % mapsize]+= shine;
+    for (int j=-1; j<2;j++)
+        for (int k=-1; k<2; k++)
+            field_of_sun[(x+j+mapsize) % mapsize][(y+k+mapsize) % mapsize]+= shine;
 }
 
 // Enriches the field of sun
@@ -102,6 +104,23 @@ void sunrise()
 
     // Reset enhancer
     enhancer = 0;
+
+    // Reset actual and gradus parameters
+    actual=0;
+    for(int i=0;i<mapsize;i++)
+        for(int j=0;j<mapsize;j++)
+            {
+                actual+=field_of_sun[i][j];
+                if(gradus<field_of_sun[i][j])
+                    gradus = field_of_sun[i][j];
+            }
+
+    // Normalize the gradus parameter: max -> max/16 (16 is the number of colours in the sungradient)
+    gradus = int(gradus/16);
+
+    // If gradus is zero, set it to 1
+    if(gradus == 0)
+        gradus = 1;
 }
 
 // Clears the field of sun

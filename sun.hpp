@@ -9,5 +9,11 @@ void renewsun()
 {
     sunset();
     sunrise();
-    sun.enrich(field_of_sun);
+    sun.enrich();
+}
+
+void removesun()
+{
+    sunset();
+    sun.dusk();
 }

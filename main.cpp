@@ -1,4 +1,3 @@
-#include <SFML/Graphics.hpp>
 #include <stdlib.h>
 #include <iostream>
 #include <vector>
@@ -11,6 +10,7 @@
 #include "customSFML.hpp"
 #include "sun.hpp"
 #include "rabbits.hpp"
+#include "wolves.hpp"
 
 using namespace sf;
 using namespace std;
@@ -23,17 +23,15 @@ int main()
     Font arcade;
     arcade.loadFromFile("arcade.ttf");
 
-    Text elapsed("",arcade,50);
-    elapsed.setPosition(Vector2f(heigth+100,100));
-
-    Text map("",arcade,30);
-    map.setPosition(Vector2f(heigth+100,200));
+    Text general("",arcade,40);
+    general.setPosition(Vector2f(heigth+100,100));
 
     Time timeelapsed;
 
     Clock clock;
 
-    Rabbits zhoverch(100);
+    Rabbits zhoverch(200);
+    Wolves silnychyi(100);
 
     while (window.isOpen())
     {
@@ -48,48 +46,71 @@ int main()
                 if (e.key.code == Keyboard::Escape)
                     window.close();
 
+            // Kill random rabbit
             if (e.type == Event::KeyPressed)
                 if (e.key.code == Keyboard::K)
                     zhoverch.kill(rand()% zhoverch.fluffle);
 
+            // Hide rabbits
             if (e.type == Event::KeyPressed)
                 if (e.key.code == Keyboard::R)
                     show_rabbits = !show_rabbits;
 
+            // Hide sun
             if (e.type == Event::KeyPressed)
                 if (e.key.code == Keyboard::S)
                     show_sun = !show_sun;
         }
 
-        // Update time
+        // Update text screen
         timeelapsed = clock.getElapsedTime();
-        elapsed.setString(" Time is " + std::to_string(timeelapsed.asMilliseconds()));
+        general.setString(  "Time   " + std::to_string(timeelapsed.asMilliseconds()) + "\n"
+                            "Map size   " + std::to_string(mapsize) + "\n"
+                            "Expected value   " + std::to_string(expected) + "\n"
+                            "Actual value   " + std::to_string(actual) + "\n"
+                            "Rabbits Population   " + std::to_string(zhoverch.fluffle) + "\n"
+                            "Wolves Population   " + std::to_string(silnychyi.pack) + "\n"
+                            "Gradus   " + std::to_string(gradus) + "\n"
+                        );
 
-        // Automatic sunrise & sunset
-        if (timeelapsed.asMilliseconds() > regime)
+        // general.setString("");
+        // for(int i=0;i<mapsize;i++)
+        //     {for(int j=0;j<mapsize;j++)
+        //         {
+        //             general.setString(general.getString() + std::to_string(zhoverch.rabbitsmap[j][i]) + "  ");
+        //         }
+        //     general.setString(general.getString() + "\n");
+        //     }
+        // Automatic sun
+        if (timeelapsed.asMilliseconds() > sunrise_regime)
             {
                 renewsun();
-                regime+=45000;
-                string lol = "";
-                for (int i=0;i<mapsize;i++)
-                    {for (int j=0;j<mapsize;j++)
-                        {lol+=to_string(field_of_sun[j][i]); lol+="    ";}
-                    lol+="\n";}
-                map.setString(lol);
-                       
+                sunrise_regime+=60000;                       
+            }
+
+        if (timeelapsed.asMilliseconds() > sunset_regime)
+            {
+                removesun();
+                sunset_regime+=60000;                       
             }
 
         if (timeelapsed.asMilliseconds() > rabbit_regime)
             {
-                zhoverch.move(field_of_sun);
+                zhoverch.update();
                 rabbit_regime+=rabbit_speed;
             }
 
+        if (timeelapsed.asMilliseconds() > wolf_regime)
+            {
+                silnychyi.update(zhoverch);
+                wolf_regime+=wolf_speed;
+            }
+
         window.clear(grey);
-        window.draw(elapsed);
-        // window.draw(map);
+        window.draw(general);
         if(show_sun) window.draw(sun);
         if(show_rabbits) window.draw(zhoverch);
+        window.draw(silnychyi);
         window.display();
     }
    

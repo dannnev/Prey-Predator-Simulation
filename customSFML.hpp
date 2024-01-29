@@ -6,7 +6,7 @@ using namespace sf;
 const int width = 1600;
 const int heigth = 900;
 const int mapsize = 150;
-const int rang = heigth/mapsize;
+const int rang = int(heigth/mapsize);
 
 // Control keys
 bool show_rabbits = true;

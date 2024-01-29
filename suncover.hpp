@@ -1,4 +1,4 @@
-// Root header file for the sun.hpp
+// Header file for the sun.hpp
 
 #include <SFML/Graphics.hpp>
 
@@ -15,7 +15,7 @@ public:
         vertices = turn_vertices;
     };
 
-    void enrich(unsigned int field_of_sun[][mapsize])
+    void enrich() // Updates the vertex array, which then can be drawn.
     {
         for (int i = 0; i < mapsize; i++)
             for (int j = 0; j < mapsize; j++)
@@ -34,7 +34,7 @@ public:
                         }
                     else
                         {
-                            Color colo(sungradient[min(15,div(field_of_sun[i][j],15).quot)]);
+                            Color colo(sungradient[min(15,div(field_of_sun[i][j],gradus).quot)]); // sungradien is a list of colours
     
                             quad[0].color = colo;
                             quad[1].color = colo;
@@ -47,6 +47,13 @@ public:
                     quad[2].position = Vector2f((i+1)*rang,(j+1)*rang);
                     quad[3].position = Vector2f(i*rang,(j+1)*rang);
                 }
+    }
+
+    void dusk()
+    {
+        for (int i = 0; i < 4*mapsize*mapsize; i++)
+                vertices[i].color = Color::Transparent;
+    
     }
 
     ~Suncover() {};
