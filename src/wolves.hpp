@@ -222,7 +222,7 @@ public:
             {phaseplot[i] = phaseplot[i+1];
             phaseplot[i].color = phase_color;}
         
-        phaseplot[phase_length-1] = Vertex(Vector2f(heigth+27+min(points_horizontal,points_horizontal*pack/absolute_x), heigth-105-min(points_horizontal-1,(points_horizontal-1)*zho.fluffle/absolute_y)));
+        phaseplot[phase_length-1] = Vertex(Vector2f(heigth+27+min(points_horizontal-1,(points_horizontal-1)*pack/absolute_x), heigth-105-min(points_horizontal-1,(points_horizontal-1)*zho.fluffle/absolute_y)));
     
         if (pack > absolute_x)
             graphright.setString(to_string(pack));
